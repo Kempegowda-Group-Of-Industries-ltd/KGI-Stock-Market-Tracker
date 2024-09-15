@@ -14,15 +14,29 @@ def format_price(price):
     except (ValueError, TypeError):
         return "$0.00"
 
+import json
+
 def parse_api_response(response):
-    """Parse and validate the API response, returning data or an error message."""
-    if response.status_code == 200:
+    """
+    Parse the API response and handle errors.
+
+    Args:
+        response (requests.Response): The API response object.
+
+    Returns:
+        tuple: (data, error) where `data` is the parsed JSON response and `error` is
+               any error message encountered during parsing.
+    """
+    try:
         data = response.json()
         if 'Error Message' in data:
-            return None, f"Error: {data['Error Message']}"
+            return None, data['Error Message']
         return data, None
-    else:
-        return None, f"HTTP Error {response.status_code}: {response.reason}"
+    except json.JSONDecodeError as e:
+        return None, f"Error decoding JSON: {str(e)}"
+    except Exception as e:
+        return None, f"An error occurred: {str(e)}"
+
 
 def extract_stock_info(data):
     """Extract relevant stock information from the API response data."""
