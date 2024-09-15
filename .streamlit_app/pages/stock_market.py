@@ -1,37 +1,47 @@
 import streamlit as st
-from stock_tracker import stock_data, portfolio, alerts
+import pandas as pd
 import plotly.express as px
+from stock_tracker import get_stock_data, search_stock
 
 def display_stock_market_tracker():
-    st.title("📈 Stock Market Tracker")
+    st.title("Stock Market Tracker")
 
     # Search for stocks
-    search_query = st.text_input("Search Stock Market (Company Name, Symbol, etc.)", "")
-    if search_query:
-        search_results = stock_data.search_stock(search_query)
-        if search_results:
-            st.write(f"Search results for: {search_query}")
-            st.dataframe(search_results)
+    search_query = st.text_input("Search for Stocks", "")
+    if st.button("Search"):
+        if search_query:
+            search_results, error = search_stock(search_query)
+            if error:
+                st.error(error)
+            elif not search_results.empty:
+                st.write(f"Search results for: {search_query}")
+                st.dataframe(search_results)
+            else:
+                st.write("No results found.")
+        else:
+            st.write("Please enter a search query.")
 
     # Input for Stock Symbol
     symbol = st.text_input("Enter Stock Symbol (e.g., AAPL, TSLA)", "")
-    if symbol:
-        stock_info = stock_data.get_stock_data(symbol)
+    if symbol and st.button("Get Stock Data"):
+        stock_data, error = get_stock_data(symbol)
+        if error:
+            st.error(error)
+        elif stock_data:
+            st.write(f"Stock data for {symbol}")
 
-        if stock_info:
-            # Display real-time stock data
-            st.subheader(f"Real-time Price of {symbol.upper()}")
-            st.write(f"Current Price: {stock_info['price']}")
-            st.write(f"Day High: {stock_info['high']}, Day Low: {stock_info['low']}")
+            # Display stock data in JSON format
+            st.json(stock_data)
 
-            # Plot stock trend using Plotly
-            fig = px.line(stock_info['historical'], x='date', y='close', title=f"{symbol.upper()} Price Trend")
-            st.plotly_chart(fig)
+            # Visualize stock data (example: closing price over time)
+            time_series = stock_data.get('Time Series (5min)', {})
+            if time_series:
+                df = pd.DataFrame(time_series).T
+                df.index = pd.to_datetime(df.index)
+                df.columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+                df['Close'] = pd.to_numeric(df['Close'])
 
-        # Portfolio section
-        st.subheader("📊 Portfolio Management")
-        portfolio.display_portfolio()
-
-        # Alerts section
-        st.subheader("🔔 Set Stock Alerts")
-        alerts.display_alerts(symbol)
+                fig = px.line(df, x=df.index, y='Close', title=f'{symbol} Closing Price Over Time')
+                st.plotly_chart(fig)
+            else:
+                st.write("No time series data available for visualization.")
