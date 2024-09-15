@@ -40,6 +40,7 @@ def display_stock_market_tracker():
                 df.index = pd.to_datetime(df.index)
                 df.columns = ['Open', 'High', 'Low', 'Close', 'Volume']
                 df['Close'] = pd.to_numeric(df['Close'])
+                df = df.sort_index()  # Sort by date to ensure proper plotting
 
                 fig = px.line(df, x=df.index, y='Close', title=f'{symbol} Closing Price Over Time')
                 st.plotly_chart(fig)
