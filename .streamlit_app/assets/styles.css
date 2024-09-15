@@ -1,0 +1,31 @@
+/* Center alignment for titles and headers */
+h1, h2, h3, .title {
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Buttons */
+button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+/* Table Styling */
+.dataframe {
+    width: 100%;
+    font-family: 'Courier New', monospace;
+    color: #333;
+}
+
+/* Sidebar background */
+.stSidebar {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+}
