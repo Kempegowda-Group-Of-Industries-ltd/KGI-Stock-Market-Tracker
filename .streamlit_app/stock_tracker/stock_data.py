@@ -5,6 +5,8 @@ from .utils import format_price, parse_api_response, extract_stock_info
 API_KEY = '7BJZMCBGIP1SHX23'
 BASE_URL = 'https://www.alphavantage.co/query'
 
+
+
 def get_stock_data(symbol):
     """Fetch real-time stock data for a given symbol."""
     params = {
@@ -36,13 +38,13 @@ def search_stock(query):
     data, error = parse_api_response(response)
     
     if error:
-        return None, error
+        return pd.DataFrame(), error  # Return empty DataFrame and error
     
     if 'bestMatches' in data:
         # Convert to a DataFrame for better handling and display
-        return pd.DataFrame(data['bestMatches'])
+        return pd.DataFrame(data['bestMatches']), None  # Return DataFrame and no error
     
-    return pd.DataFrame(), "No matches found."
+    return pd.DataFrame(), "No matches found."  # Return empty DataFrame and message
 
 def extract_stock_info(data):
     """Extract relevant stock information from the API response data."""
