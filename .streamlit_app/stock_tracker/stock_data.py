@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 
-API_KEY = "YOUR_ALPHA_VANTAGE_API_KEY"
+API_KEY = "7BJZMCBGIP1SHX23"
 
 def get_stock_data(symbol):
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey={API_KEY}"
