@@ -27,6 +27,10 @@ def get_stock_data(symbol):
         return stock_info, None
     return None, "No stock data available."
 
+import requests
+from .utils import parse_api_response  # Import parse_api_response from utils
+
+# Example usage within your function
 def search_stock(query):
     """Search for stocks based on a query."""
     params = {
@@ -45,6 +49,7 @@ def search_stock(query):
         return pd.DataFrame(data['bestMatches']), None  # Return DataFrame and no error
     
     return pd.DataFrame(), "No matches found."  # Return empty DataFrame and message
+
 
 def extract_stock_info(data):
     """Extract relevant stock information from the API response data."""
