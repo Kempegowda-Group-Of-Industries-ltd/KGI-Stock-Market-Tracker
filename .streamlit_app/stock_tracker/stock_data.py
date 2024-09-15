@@ -1,39 +1,23 @@
 import requests
-import pandas as pd
-
-API_KEY = "7BJZMCBGIP1SHX23"
+from .utils import format_price, parse_api_response
 
 def get_stock_data(symbol):
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey={API_KEY}"
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey=7BJZMCBGIP1SHX23"
     response = requests.get(url)
-    data = response.json()
+    data, error = parse_api_response(response)
 
-    if 'Time Series (5min)' in data:
-        historical = []
-        for timestamp, details in data['Time Series (5min)'].items():
-            historical.append({
-                'date': timestamp,
-                'open': details['1. open'],
-                'high': details['2. high'],
-                'low': details['3. low'],
-                'close': details['4. close']
-            })
-        return {
-            'price': historical[0]['close'],
-            'high': historical[0]['high'],
-            'low': historical[0]['low'],
-            'historical': historical
-        }
-    return None
+    if error:
+        return None, error
+
+    stock_info = extract_stock_info(data)
+    return stock_info, None
 
 def search_stock(query):
-    # Example of a simple stock search using Alpha Vantage
-    url = f"https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={query}&apikey={API_KEY}"
+    url = f"https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={query}&apikey=7BJZMCBGIP1SHX23"
     response = requests.get(url)
-    data = response.json()
+    data, error = parse_api_response(response)
 
-    if 'bestMatches' in data:
-        # Convert search results into a DataFrame for easier display
-        results = pd.DataFrame(data['bestMatches'])
-        return results[['1. symbol', '2. name', '4. region', '8. currency']]
-    return None
+    if error:
+        return None, error
+
+    return data.get('bestMatches', []), None
